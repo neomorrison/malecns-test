@@ -1,0 +1,8 @@
+runs/*
+!runs/.gitkeep
+data/
+__pycache__/
+*.pyc
+/tmp/
+results/*.mp4
+results/*_trace.json

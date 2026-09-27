@@ -1,0 +1,12 @@
+mujoco>=3.3
+numpy
+scipy
+pandas
+pyarrow
+numba
+jax
+optax
+imageio
+imageio-ffmpeg
+matplotlib
+pillow

@@ -1,0 +1,253 @@
+<!--
+  Anatomical humanoid body for the maleCNS brain.
+
+  Proportions follow de Leva (1996) segment tables for an adult male
+  (stature 1.74 m, mass 72 kg). Segment masses (kg):
+    head+neck 5.00 | thorax 11.50 | abdomen 11.76 | pelvis 8.04
+    upper arm 1.95 | forearm 1.17 | hand 0.44
+    thigh 10.20    | shank 3.12   | foot 0.99          (total 72.0 kg)
+  Segment lengths (m): thigh 0.422, shank 0.434, ankle height 0.08,
+  foot 0.26, upper arm 0.28, forearm 0.27; hip joint centres 0.18 m apart,
+  shoulder joint centres 0.38 m apart.
+
+  Frame: x forward, y left, z up. Joint signs are anatomical: positive
+  flexion / abduction / dorsiflexion as named. Joint ranges are within
+  normal human range of motion.
+
+  Actuators are PD "muscle groups" (position servos with torque limits in
+  the range of human joint strength). The locomotion policy drives the
+  legs and spine; the arms are driven by a gait-coupled swing pattern and
+  by the feeding (hand-to-mouth) motor program.
+-->
+<mujoco model="malecns_humanoid">
+  <compiler angle="degree" autolimits="true"/>
+  <option timestep="0.004" integrator="implicitfast"/>
+  <size memory="4M"/>
+
+  <visual>
+    <global offwidth="1280" offheight="720"/>
+    <quality shadowsize="4096"/>
+    <headlight ambient="0.35 0.35 0.35" diffuse="0.5 0.5 0.5"/>
+    <map znear="0.02"/>
+  </visual>
+
+  <asset>
+    <texture name="sky" type="skybox" builtin="gradient" rgb1="0.55 0.7 0.9" rgb2="0.95 0.97 1" width="512" height="512"/>
+    <texture name="grass" type="2d" builtin="checker" rgb1="0.36 0.52 0.30" rgb2="0.40 0.57 0.33" width="512" height="512"/>
+    <material name="ground" texture="grass" texrepeat="40 40" reflectance="0.05"/>
+    <material name="skin" rgba="0.87 0.70 0.58 1"/>
+    <material name="shirt" rgba="0.20 0.38 0.62 1"/>
+    <material name="shorts" rgba="0.18 0.18 0.22 1"/>
+    <material name="shoe" rgba="0.92 0.92 0.92 1"/>
+    <material name="eye" rgba="0.1 0.1 0.1 1"/>
+  </asset>
+
+  <default>
+    <joint damping="2" armature="0.05" limited="true"/>
+    <geom contype="2" conaffinity="1" condim="3" friction="1.0 0.02 0.01" solref="0.01 1"/>
+    <site group="3" rgba="1 0 0 0.3"/>
+    <position ctrllimited="true"/>
+    <default class="hip">
+      <position kp="300" kv="20" forcerange="-260 260"/>
+    </default>
+    <default class="hip_rot">
+      <position kp="150" kv="8" forcerange="-150 150"/>
+    </default>
+    <default class="knee">
+      <position kp="300" kv="15" forcerange="-300 300"/>
+    </default>
+    <default class="ankle">
+      <position kp="300" kv="10" forcerange="-200 200"/>
+    </default>
+    <default class="ankle_inv">
+      <position kp="120" kv="5" forcerange="-100 100"/>
+    </default>
+    <!-- legs collide with the other leg (and the world), as a real body's would -->
+    <default class="leg_l">
+      <geom contype="4" conaffinity="9"/>
+    </default>
+    <default class="leg_r">
+      <geom contype="8" conaffinity="5"/>
+    </default>
+    <default class="spine">
+      <position kp="400" kv="30" forcerange="-300 300"/>
+    </default>
+    <default class="shoulder">
+      <position kp="60" kv="4" forcerange="-70 70"/>
+    </default>
+    <default class="elbow">
+      <position kp="40" kv="3" forcerange="-45 45"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <light name="sun" pos="0 0 6" dir="0.3 0.2 -1" directional="true" diffuse="0.7 0.7 0.7" castshadow="true"/>
+    <geom name="floor" type="plane" size="0 0 0.05" material="ground" contype="1" conaffinity="1" friction="1.0 0.02 0.01"/>
+
+    <body name="pelvis" pos="0 0 0.94">
+      <freejoint name="root"/>
+      <camera name="track" mode="trackcom" pos="0 -4.5 0.6" xyaxes="1 0 0 0 0.25 1"/>
+      <camera name="side" mode="trackcom" pos="-1.5 -5.5 1.0" xyaxes="0.96 -0.26 0 0.06 0.2 1"/>
+      <geom name="pelvis" type="capsule" fromto="0 -0.085 0 0 0.085 0" size="0.095" mass="5.2" material="shorts"/>
+      <geom name="sacrum" type="sphere" pos="-0.01 0 0.075" size="0.105" mass="2.84" material="shorts"/>
+      <site name="pelvis" pos="0 0 0"/>
+      <site name="imu" pos="0 0 0.05" size="0.02"/>
+
+      <!-- Spine: lumbar joint (L3) lumps lumbar + thoracic mobility -->
+      <body name="torso" pos="0 0 0.11">
+        <joint name="lumbar_bend" axis="1 0 0" range="-25 25"/>
+        <joint name="lumbar_flex" axis="0 1 0" range="-25 45"/>
+        <joint name="lumbar_twist" axis="0 0 1" range="-30 30"/>
+        <geom name="abdomen" type="capsule" fromto="0 -0.07 0.07 0 0.07 0.07" size="0.11" mass="11.76" material="shirt"/>
+        <geom name="thorax" type="capsule" fromto="0 -0.085 0.28 0 0.085 0.28" size="0.125" mass="11.5" material="shirt"/>
+        <site name="torso" pos="0 0 0.2"/>
+
+        <body name="head" pos="0 0 0.43">
+          <geom name="neck" type="capsule" fromto="0 0 0 0 0 0.08" size="0.05" mass="1.0" material="skin"/>
+          <geom name="skull" type="sphere" pos="0.01 0 0.175" size="0.1" mass="4.0" material="skin"/>
+          <geom name="eye_l" type="sphere" pos="0.095 0.035 0.19" size="0.013" mass="0.001" material="eye" contype="0" conaffinity="0"/>
+          <geom name="eye_r" type="sphere" pos="0.095 -0.035 0.19" size="0.013" mass="0.001" material="eye" contype="0" conaffinity="0"/>
+          <site name="head" pos="0.01 0 0.175"/>
+          <site name="mouth" pos="0.1 0 0.12" size="0.02"/>
+          <!-- bilateral odour sensors, forward-facing like a fly's antennae -->
+          <site name="antenna_l" pos="0.09 0.06 0.23" size="0.01"/>
+          <site name="antenna_r" pos="0.09 -0.06 0.23" size="0.01"/>
+          <camera name="eyes" pos="0.11 0 0.19" xyaxes="0 -1 0 0 0 1" fovy="100"/>
+        </body>
+
+        <body name="upper_arm_l" pos="0 0.19 0.34">
+          <joint name="shoulder_flex_l" axis="0 -1 0" range="-60 170"/>
+          <joint name="shoulder_abd_l" axis="1 0 0" range="-15 160"/>
+          <joint name="shoulder_rot_l" axis="0 0 1" range="-80 80"/>
+          <geom name="upper_arm_l" type="capsule" fromto="0 0 0 0 0 -0.28" size="0.045" mass="1.95" material="shirt"/>
+          <body name="forearm_l" pos="0 0 -0.28">
+            <joint name="elbow_l" axis="0 -1 0" range="0 150"/>
+            <geom name="forearm_l" type="capsule" fromto="0 0 0 0 0 -0.25" size="0.037" mass="1.17" material="skin"/>
+            <geom name="hand_l" type="sphere" pos="0 0 -0.3" size="0.045" mass="0.44" material="skin"/>
+            <site name="hand_l" pos="0 0 -0.3" size="0.05"/>
+          </body>
+        </body>
+
+        <body name="upper_arm_r" pos="0 -0.19 0.34">
+          <joint name="shoulder_flex_r" axis="0 -1 0" range="-60 170"/>
+          <joint name="shoulder_abd_r" axis="-1 0 0" range="-15 160"/>
+          <joint name="shoulder_rot_r" axis="0 0 -1" range="-80 80"/>
+          <geom name="upper_arm_r" type="capsule" fromto="0 0 0 0 0 -0.28" size="0.045" mass="1.95" material="shirt"/>
+          <body name="forearm_r" pos="0 0 -0.28">
+            <joint name="elbow_r" axis="0 -1 0" range="0 150"/>
+            <geom name="forearm_r" type="capsule" fromto="0 0 0 0 0 -0.25" size="0.037" mass="1.17" material="skin"/>
+            <geom name="hand_r" type="sphere" pos="0 0 -0.3" size="0.045" mass="0.44" material="skin"/>
+            <site name="hand_r" pos="0 0 -0.3" size="0.05"/>
+          </body>
+        </body>
+      </body>
+
+      <!-- Left leg -->
+      <body name="thigh_l" pos="0 0.09 0">
+        <joint name="hip_flex_l" axis="0 -1 0" range="-30 120"/>
+        <joint name="hip_abd_l" axis="1 0 0" range="-30 45"/>
+        <joint name="hip_rot_l" axis="0 0 1" range="-45 45"/>
+        <geom name="thigh_l" class="leg_l" type="capsule" fromto="0 0 -0.02 0 0 -0.40" size="0.068" mass="10.2" material="shorts"/>
+        <body name="shank_l" pos="0 0 -0.422">
+          <joint name="knee_l" axis="0 1 0" range="0 150"/>
+          <geom name="shank_l" class="leg_l" type="capsule" fromto="0 0 -0.02 0 0 -0.40" size="0.048" mass="3.12" material="skin"/>
+          <body name="foot_l" pos="0 0 -0.434">
+            <joint name="ankle_flex_l" axis="0 -1 0" range="-50 30"/>
+            <joint name="ankle_inv_l" axis="1 0 0" range="-25 25"/>
+            <geom name="foot_l" class="leg_l" type="box" pos="0.045 0 -0.055" size="0.13 0.045 0.025" mass="0.99" material="shoe" friction="0.3 0.02 0.01"/>
+            <site name="sole_l" type="box" pos="0.045 0 -0.075" size="0.135 0.05 0.015"/>
+            <site name="foot_l" pos="0.045 0 -0.08"/>
+          </body>
+        </body>
+      </body>
+
+      <!-- Right leg -->
+      <body name="thigh_r" pos="0 -0.09 0">
+        <joint name="hip_flex_r" axis="0 -1 0" range="-30 120"/>
+        <joint name="hip_abd_r" axis="-1 0 0" range="-30 45"/>
+        <joint name="hip_rot_r" axis="0 0 -1" range="-45 45"/>
+        <geom name="thigh_r" class="leg_r" type="capsule" fromto="0 0 -0.02 0 0 -0.40" size="0.068" mass="10.2" material="shorts"/>
+        <body name="shank_r" pos="0 0 -0.422">
+          <joint name="knee_r" axis="0 1 0" range="0 150"/>
+          <geom name="shank_r" class="leg_r" type="capsule" fromto="0 0 -0.02 0 0 -0.40" size="0.048" mass="3.12" material="skin"/>
+          <body name="foot_r" pos="0 0 -0.434">
+            <joint name="ankle_flex_r" axis="0 -1 0" range="-50 30"/>
+            <joint name="ankle_inv_r" axis="-1 0 0" range="-25 25"/>
+            <geom name="foot_r" class="leg_r" type="box" pos="0.045 0 -0.055" size="0.13 0.045 0.025" mass="0.99" material="shoe" friction="0.3 0.02 0.01"/>
+            <site name="sole_r" type="box" pos="0.045 0 -0.075" size="0.135 0.05 0.015"/>
+            <site name="foot_r" pos="0.045 0 -0.08"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <!-- legs + spine: driven by the locomotion policy (order matters) -->
+    <position name="lumbar_bend" joint="lumbar_bend" class="spine" inheritrange="1"/>
+    <position name="lumbar_flex" joint="lumbar_flex" class="spine" inheritrange="1"/>
+    <position name="lumbar_twist" joint="lumbar_twist" class="spine" inheritrange="1"/>
+    <position name="hip_flex_l" joint="hip_flex_l" class="hip" inheritrange="1"/>
+    <position name="hip_abd_l" joint="hip_abd_l" class="hip" inheritrange="1"/>
+    <position name="hip_rot_l" joint="hip_rot_l" class="hip_rot" inheritrange="1"/>
+    <position name="knee_l" joint="knee_l" class="knee" inheritrange="1"/>
+    <position name="ankle_flex_l" joint="ankle_flex_l" class="ankle" inheritrange="1"/>
+    <position name="ankle_inv_l" joint="ankle_inv_l" class="ankle_inv" inheritrange="1"/>
+    <position name="hip_flex_r" joint="hip_flex_r" class="hip" inheritrange="1"/>
+    <position name="hip_abd_r" joint="hip_abd_r" class="hip" inheritrange="1"/>
+    <position name="hip_rot_r" joint="hip_rot_r" class="hip_rot" inheritrange="1"/>
+    <position name="knee_r" joint="knee_r" class="knee" inheritrange="1"/>
+    <position name="ankle_flex_r" joint="ankle_flex_r" class="ankle" inheritrange="1"/>
+    <position name="ankle_inv_r" joint="ankle_inv_r" class="ankle_inv" inheritrange="1"/>
+    <!-- arms: gait-coupled swing + feeding motor program -->
+    <position name="shoulder_flex_l" joint="shoulder_flex_l" class="shoulder" inheritrange="1"/>
+    <position name="shoulder_abd_l" joint="shoulder_abd_l" class="shoulder" inheritrange="1"/>
+    <position name="shoulder_rot_l" joint="shoulder_rot_l" class="shoulder" inheritrange="1"/>
+    <position name="elbow_l" joint="elbow_l" class="elbow" inheritrange="1"/>
+    <position name="shoulder_flex_r" joint="shoulder_flex_r" class="shoulder" inheritrange="1"/>
+    <position name="shoulder_abd_r" joint="shoulder_abd_r" class="shoulder" inheritrange="1"/>
+    <position name="shoulder_rot_r" joint="shoulder_rot_r" class="shoulder" inheritrange="1"/>
+    <position name="elbow_r" joint="elbow_r" class="elbow" inheritrange="1"/>
+  </actuator>
+
+  <sensor>
+    <gyro name="imu_gyro" site="imu"/>
+    <accelerometer name="imu_acc" site="imu"/>
+    <framequat name="imu_quat" objtype="site" objname="imu"/>
+    <touch name="sole_l" site="sole_l"/>
+    <touch name="sole_r" site="sole_r"/>
+    <framepos name="foot_l_pos" objtype="site" objname="foot_l"/>
+    <framepos name="foot_r_pos" objtype="site" objname="foot_r"/>
+    <framelinvel name="foot_l_vel" objtype="site" objname="foot_l"/>
+    <framelinvel name="foot_r_vel" objtype="site" objname="foot_r"/>
+    <framezaxis name="torso_up" objtype="site" objname="torso"/>
+    <framezaxis name="foot_l_up" objtype="site" objname="foot_l"/>
+    <framezaxis name="foot_r_up" objtype="site" objname="foot_r"/>
+    <framepos name="head_pos" objtype="site" objname="head"/>
+    <subtreecom name="com" body="pelvis"/>
+    <subtreelinvel name="com_vel" body="pelvis"/>
+    <actuatorfrc name="tau_lumbar_bend" actuator="lumbar_bend"/>
+    <actuatorfrc name="tau_lumbar_flex" actuator="lumbar_flex"/>
+    <actuatorfrc name="tau_lumbar_twist" actuator="lumbar_twist"/>
+    <actuatorfrc name="tau_hip_flex_l" actuator="hip_flex_l"/>
+    <actuatorfrc name="tau_hip_abd_l" actuator="hip_abd_l"/>
+    <actuatorfrc name="tau_hip_rot_l" actuator="hip_rot_l"/>
+    <actuatorfrc name="tau_knee_l" actuator="knee_l"/>
+    <actuatorfrc name="tau_ankle_flex_l" actuator="ankle_flex_l"/>
+    <actuatorfrc name="tau_ankle_inv_l" actuator="ankle_inv_l"/>
+    <actuatorfrc name="tau_hip_flex_r" actuator="hip_flex_r"/>
+    <actuatorfrc name="tau_hip_abd_r" actuator="hip_abd_r"/>
+    <actuatorfrc name="tau_hip_rot_r" actuator="hip_rot_r"/>
+    <actuatorfrc name="tau_knee_r" actuator="knee_r"/>
+    <actuatorfrc name="tau_ankle_flex_r" actuator="ankle_flex_r"/>
+    <actuatorfrc name="tau_ankle_inv_r" actuator="ankle_inv_r"/>
+    <actuatorfrc name="tau_shoulder_flex_l" actuator="shoulder_flex_l"/>
+    <actuatorfrc name="tau_shoulder_abd_l" actuator="shoulder_abd_l"/>
+    <actuatorfrc name="tau_shoulder_rot_l" actuator="shoulder_rot_l"/>
+    <actuatorfrc name="tau_elbow_l" actuator="elbow_l"/>
+    <actuatorfrc name="tau_shoulder_flex_r" actuator="shoulder_flex_r"/>
+    <actuatorfrc name="tau_shoulder_abd_r" actuator="shoulder_abd_r"/>
+    <actuatorfrc name="tau_shoulder_rot_r" actuator="shoulder_rot_r"/>
+    <actuatorfrc name="tau_elbow_r" actuator="elbow_r"/>
+  </sensor>
+</mujoco>
