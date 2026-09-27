@@ -1,0 +1,783 @@
+{
+ "params": {
+  "dt_ms": 0.25,
+  "v_rest": -52.0,
+  "v_reset": -52.0,
+  "v_th": -45.0,
+  "tau_m": 20.0,
+  "tau_syn": 5.0,
+  "t_ref": 2.2,
+  "delay": 1.8,
+  "w_syn": 0.15538294797687863,
+  "w_poisson": 68.75,
+  "adapt_inc": 0.0,
+  "tau_adapt": 200.0
+ },
+ "stim_rate_hz": 100.0,
+ "window_ms": 1000.0,
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "n_neurons": 141615,
+ "interface": "sugar GRNs          77        (LB3a, LB3b, LB3c, LB3d)\npursuit VPNs L/R   369 / 360  (LC10a, LC10c-1, LC10d, LC10e)\nloom VPNs    L/R   165 / 146  (LPLC2, LC4)\nfood ORNs    L/R   108 / 124  (ORN_DM1, ORN_DM2, ORN_DM4, ORN_VA2)\nreadout GF        L/R 1/1  (DNp01)\nreadout STEER     L/R 3/3  (DNa02, DNa01, DNg13)\nreadout FORWARD   L/R 3/3  (DNp09, DNg97, DNg100)\nreadout BACKWARD  L/R 2/2  (MDN)\nreadout FEED      L/R 1/1  (MN9)",
+ "results": {
+  "none": {
+   "groups": {
+    "GF": [
+     0.0,
+     0.0
+    ],
+    "STEER": [
+     0.0,
+     0.0
+    ],
+    "FORWARD": [
+     0.0,
+     0.0
+    ],
+    "BACKWARD": [
+     0.0,
+     0.0
+    ],
+    "FEED": [
+     0.0,
+     0.0
+    ]
+   },
+   "total_rate": 0.0,
+   "active_neurons": 0,
+   "top_descending": []
+  },
+  "sugar": {
+   "groups": {
+    "GF": [
+     0.0,
+     0.0
+    ],
+    "STEER": [
+     0.0,
+     0.1111111111111111
+    ],
+    "FORWARD": [
+     0.6666666666666666,
+     0.5555555555555556
+    ],
+    "BACKWARD": [
+     0.0,
+     0.0
+    ],
+    "FEED": [
+     162.33333333333334,
+     7.333333333333333
+    ]
+   },
+   "total_rate": 0.18743541762289775,
+   "active_neurons": 658,
+   "top_descending": [
+    {
+     "instance": "DNge059_L",
+     "type": "DNge059",
+     "rate": 151.7
+    },
+    {
+     "instance": "DNge031_L",
+     "type": "DNge031",
+     "rate": 149.0
+    },
+    {
+     "instance": "DNge031_R",
+     "type": "DNge031",
+     "rate": 148.0
+    },
+    {
+     "instance": "DNg67_R",
+     "type": "DNg67",
+     "rate": 136.3
+    },
+    {
+     "instance": "DNge059_R",
+     "type": "DNge059",
+     "rate": 123.3
+    },
+    {
+     "instance": "DNg67_L",
+     "type": "DNg67",
+     "rate": 121.3
+    },
+    {
+     "instance": "DNge106_R",
+     "type": "DNge106",
+     "rate": 107.7
+    },
+    {
+     "instance": "DNge007_L",
+     "type": "DNge007",
+     "rate": 101.0
+    },
+    {
+     "instance": "DNge007_R",
+     "type": "DNge007",
+     "rate": 100.3
+    },
+    {
+     "instance": "DNg49_L",
+     "type": "DNg49",
+     "rate": 87.7
+    },
+    {
+     "instance": "DNge051_R",
+     "type": "DNge051",
+     "rate": 84.3
+    },
+    {
+     "instance": "DNpe030_L",
+     "type": "DNpe030",
+     "rate": 82.7
+    },
+    {
+     "instance": "DNg38_R",
+     "type": "DNg38",
+     "rate": 80.0
+    },
+    {
+     "instance": "DNge046_R",
+     "type": "DNge046",
+     "rate": 79.3
+    },
+    {
+     "instance": "DNg38_L",
+     "type": "DNg38",
+     "rate": 74.3
+    }
+   ]
+  },
+  "target_left": {
+   "groups": {
+    "GF": [
+     0.0,
+     0.0
+    ],
+    "STEER": [
+     46.77777777777777,
+     33.55555555555555
+    ],
+    "FORWARD": [
+     0.0,
+     0.6666666666666666
+    ],
+    "BACKWARD": [
+     0.0,
+     0.0
+    ],
+    "FEED": [
+     0.0,
+     0.0
+    ]
+   },
+   "total_rate": 0.40605161882568935,
+   "active_neurons": 1079,
+   "top_descending": [
+    {
+     "instance": "DNg33_R",
+     "type": "DNg33",
+     "rate": 290.0
+    },
+    {
+     "instance": "DNg33_L",
+     "type": "DNg33",
+     "rate": 289.0
+    },
+    {
+     "instance": "pIP1_L",
+     "type": "pIP1",
+     "rate": 189.7
+    },
+    {
+     "instance": "DNp31_R",
+     "type": "DNp31",
+     "rate": 143.0
+    },
+    {
+     "instance": "DNp31_L",
+     "type": "DNp31",
+     "rate": 137.7
+    },
+    {
+     "instance": "DNg111(hb1573072464)_L",
+     "type": "DNg111",
+     "rate": 123.3
+    },
+    {
+     "instance": "DNg74_a_R",
+     "type": "DNg74_a",
+     "rate": 122.7
+    },
+    {
+     "instance": "DNg105_L",
+     "type": "DNg105",
+     "rate": 122.3
+    },
+    {
+     "instance": "DNg74_a_L",
+     "type": "DNg74_a",
+     "rate": 120.7
+    },
+    {
+     "instance": "DNg105_R",
+     "type": "DNg105",
+     "rate": 119.7
+    },
+    {
+     "instance": "DNge054_L",
+     "type": "DNge054",
+     "rate": 112.0
+    },
+    {
+     "instance": "DNge031_L",
+     "type": "DNge031",
+     "rate": 110.3
+    },
+    {
+     "instance": "DNg13_R",
+     "type": "DNg13",
+     "rate": 100.7
+    },
+    {
+     "instance": "DNg108_L",
+     "type": "DNg108",
+     "rate": 98.0
+    },
+    {
+     "instance": "DNg108_R",
+     "type": "DNg108",
+     "rate": 97.3
+    }
+   ]
+  },
+  "target_right": {
+   "groups": {
+    "GF": [
+     0.0,
+     0.0
+    ],
+    "STEER": [
+     24.888888888888886,
+     73.22222222222221
+    ],
+    "FORWARD": [
+     0.8888888888888888,
+     0.7777777777777777
+    ],
+    "BACKWARD": [
+     0.0,
+     0.0
+    ],
+    "FEED": [
+     52.0,
+     0.0
+    ]
+   },
+   "total_rate": 0.4285115748096365,
+   "active_neurons": 1075,
+   "top_descending": [
+    {
+     "instance": "DNg33_R",
+     "type": "DNg33",
+     "rate": 285.3
+    },
+    {
+     "instance": "DNg33_L",
+     "type": "DNg33",
+     "rate": 284.7
+    },
+    {
+     "instance": "pIP1_R",
+     "type": "pIP1",
+     "rate": 231.0
+    },
+    {
+     "instance": "DNge031_R",
+     "type": "DNge031",
+     "rate": 223.3
+    },
+    {
+     "instance": "DNg105_R",
+     "type": "DNg105",
+     "rate": 215.0
+    },
+    {
+     "instance": "DNg105_L",
+     "type": "DNg105",
+     "rate": 190.7
+    },
+    {
+     "instance": "DNp31_R",
+     "type": "DNp31",
+     "rate": 180.3
+    },
+    {
+     "instance": "DNge031_L",
+     "type": "DNge031",
+     "rate": 151.0
+    },
+    {
+     "instance": "DNg111(hb1573072464)_R",
+     "type": "DNg111",
+     "rate": 148.7
+    },
+    {
+     "instance": "DNge101_R",
+     "type": "DNge101",
+     "rate": 139.0
+    },
+    {
+     "instance": "DNp31_L",
+     "type": "DNp31",
+     "rate": 138.0
+    },
+    {
+     "instance": "DNg90(hb1467707486)_R",
+     "type": "DNg90",
+     "rate": 127.7
+    },
+    {
+     "instance": "DNge101_L",
+     "type": "DNge101",
+     "rate": 126.7
+    },
+    {
+     "instance": "pIP1_L",
+     "type": "pIP1",
+     "rate": 126.7
+    },
+    {
+     "instance": "DNg13_R",
+     "type": "DNg13",
+     "rate": 113.0
+    }
+   ]
+  },
+  "loom_left": {
+   "groups": {
+    "GF": [
+     398.0,
+     293.0
+    ],
+    "STEER": [
+     0.0,
+     30.777777777777782
+    ],
+    "FORWARD": [
+     0.0,
+     0.0
+    ],
+    "BACKWARD": [
+     0.0,
+     7.333333333333333
+    ],
+    "FEED": [
+     0.0,
+     0.0
+    ]
+   },
+   "total_rate": 0.6684343701820664,
+   "active_neurons": 1070,
+   "top_descending": [
+    {
+     "instance": "DNp01(GF)_L",
+     "type": "DNp01",
+     "rate": 398.0
+    },
+    {
+     "instance": "DNp04_L",
+     "type": "DNp04",
+     "rate": 398.0
+    },
+    {
+     "instance": "DNp103(PVLP119)_L",
+     "type": "DNp103",
+     "rate": 361.0
+    },
+    {
+     "instance": "DNp02_L",
+     "type": "DNp02",
+     "rate": 359.7
+    },
+    {
+     "instance": "DNp11_L",
+     "type": "DNp11",
+     "rate": 346.7
+    },
+    {
+     "instance": "DNg40(hb5813056435)_L",
+     "type": "DNg40",
+     "rate": 335.3
+    },
+    {
+     "instance": "DNp06_L",
+     "type": "DNp06",
+     "rate": 311.7
+    },
+    {
+     "instance": "DNp03_L",
+     "type": "DNp03",
+     "rate": 303.7
+    },
+    {
+     "instance": "DNp01(GF)_R",
+     "type": "DNp01",
+     "rate": 293.0
+    },
+    {
+     "instance": "DNge119_R",
+     "type": "DNge119",
+     "rate": 287.7
+    },
+    {
+     "instance": "DNpe056(PVLP146)_L",
+     "type": "DNpe056",
+     "rate": 287.0
+    },
+    {
+     "instance": "DNg33_R",
+     "type": "DNg33",
+     "rate": 282.3
+    },
+    {
+     "instance": "DNg33_L",
+     "type": "DNg33",
+     "rate": 282.0
+    },
+    {
+     "instance": "DNg40(hb5813056435)_R",
+     "type": "DNg40",
+     "rate": 259.0
+    },
+    {
+     "instance": "DNae004(DNa05)_R",
+     "type": "DNae004",
+     "rate": 251.7
+    }
+   ]
+  },
+  "loom_right": {
+   "groups": {
+    "GF": [
+     335.6666666666667,
+     397.3333333333333
+    ],
+    "STEER": [
+     0.2222222222222222,
+     0.0
+    ],
+    "FORWARD": [
+     0.0,
+     0.0
+    ],
+    "BACKWARD": [
+     4.5,
+     0.0
+    ],
+    "FEED": [
+     0.0,
+     0.0
+    ]
+   },
+   "total_rate": 0.6068354340994951,
+   "active_neurons": 1109,
+   "top_descending": [
+    {
+     "instance": "DNp01(GF)_R",
+     "type": "DNp01",
+     "rate": 397.3
+    },
+    {
+     "instance": "DNp04_R",
+     "type": "DNp04",
+     "rate": 396.3
+    },
+    {
+     "instance": "DNp103(PVLP119)_R",
+     "type": "DNp103",
+     "rate": 359.7
+    },
+    {
+     "instance": "DNp01(GF)_L",
+     "type": "DNp01",
+     "rate": 335.7
+    },
+    {
+     "instance": "DNp02_R",
+     "type": "DNp02",
+     "rate": 335.7
+    },
+    {
+     "instance": "DNg40(hb5813056435)_R",
+     "type": "DNg40",
+     "rate": 335.0
+    },
+    {
+     "instance": "DNp11_R",
+     "type": "DNp11",
+     "rate": 325.7
+    },
+    {
+     "instance": "DNg74_a_L",
+     "type": "DNg74_a",
+     "rate": 323.0
+    },
+    {
+     "instance": "DNg74_a_R",
+     "type": "DNg74_a",
+     "rate": 319.0
+    },
+    {
+     "instance": "DNg108_R",
+     "type": "DNg108",
+     "rate": 296.0
+    },
+    {
+     "instance": "DNg33_L",
+     "type": "DNg33",
+     "rate": 288.3
+    },
+    {
+     "instance": "DNge119_R",
+     "type": "DNge119",
+     "rate": 288.3
+    },
+    {
+     "instance": "DNg33_R",
+     "type": "DNg33",
+     "rate": 288.3
+    },
+    {
+     "instance": "DNg108_L",
+     "type": "DNg108",
+     "rate": 281.7
+    },
+    {
+     "instance": "DNp06_R",
+     "type": "DNp06",
+     "rate": 266.7
+    }
+   ]
+  },
+  "hunger_drive": {
+   "groups": {
+    "GF": [
+     0.0,
+     0.6666666666666666
+    ],
+    "STEER": [
+     22.444444444444443,
+     10.666666666666666
+    ],
+    "FORWARD": [
+     78.33333333333333,
+     82.77777777777779
+    ],
+    "BACKWARD": [
+     47.0,
+     40.833333333333336
+    ],
+    "FEED": [
+     0.0,
+     0.0
+    ]
+   },
+   "total_rate": 0.2171380150407796,
+   "active_neurons": 1943,
+   "top_descending": [
+    {
+     "instance": "DNg33_R",
+     "type": "DNg33",
+     "rate": 184.3
+    },
+    {
+     "instance": "DNg33_L",
+     "type": "DNg33",
+     "rate": 184.0
+    },
+    {
+     "instance": "DNa06(PS039)_L",
+     "type": "DNa06",
+     "rate": 140.3
+    },
+    {
+     "instance": "DNge006_L",
+     "type": "DNge006",
+     "rate": 119.7
+    },
+    {
+     "instance": "DNg75(hb1874217622)_L",
+     "type": "DNg75",
+     "rate": 118.0
+    },
+    {
+     "instance": "DNge033_L",
+     "type": "DNge033",
+     "rate": 103.0
+    },
+    {
+     "instance": "DNg49(hb1405978277)_R",
+     "type": "DNg49",
+     "rate": 100.3
+    },
+    {
+     "instance": "DNp09_R",
+     "type": "DNp09",
+     "rate": 99.3
+    },
+    {
+     "instance": "DNg100_R",
+     "type": "DNg100",
+     "rate": 98.3
+    },
+    {
+     "instance": "DNg49_L",
+     "type": "DNg49",
+     "rate": 97.7
+    },
+    {
+     "instance": "DNp09_L",
+     "type": "DNp09",
+     "rate": 91.7
+    },
+    {
+     "instance": "DNg100_L",
+     "type": "DNg100",
+     "rate": 86.7
+    },
+    {
+     "instance": "DNge086_L",
+     "type": "DNge086",
+     "rate": 75.0
+    },
+    {
+     "instance": "DNa11(VES008)_L",
+     "type": "DNa11",
+     "rate": 73.7
+    },
+    {
+     "instance": "DNg52_R",
+     "type": "DNg52",
+     "rate": 65.7
+    }
+   ]
+  },
+  "odor_left": {
+   "groups": {
+    "GF": [
+     0.0,
+     0.0
+    ],
+    "STEER": [
+     0.0,
+     0.0
+    ],
+    "FORWARD": [
+     0.0,
+     0.0
+    ],
+    "BACKWARD": [
+     0.0,
+     0.0
+    ],
+    "FEED": [
+     0.0,
+     0.0
+    ]
+   },
+   "total_rate": 0.1984865068436724,
+   "active_neurons": 392,
+   "top_descending": [
+    {
+     "instance": "DNb05_R",
+     "type": "DNb05",
+     "rate": 90.3
+    },
+    {
+     "instance": "DNb05_L",
+     "type": "DNb05",
+     "rate": 79.3
+    },
+    {
+     "instance": "DNg56_R",
+     "type": "DNg56",
+     "rate": 16.7
+    },
+    {
+     "instance": "DNg35_L",
+     "type": "DNg35",
+     "rate": 10.0
+    },
+    {
+     "instance": "DNg35_R",
+     "type": "DNg35",
+     "rate": 7.7
+    }
+   ]
+  },
+  "odor_right": {
+   "groups": {
+    "GF": [
+     0.0,
+     0.0
+    ],
+    "STEER": [
+     0.0,
+     0.0
+    ],
+    "FORWARD": [
+     0.0,
+     0.0
+    ],
+    "BACKWARD": [
+     0.0,
+     0.0
+    ],
+    "FEED": [
+     0.0,
+     0.0
+    ]
+   },
+   "total_rate": 0.2536336781649778,
+   "active_neurons": 491,
+   "top_descending": [
+    {
+     "instance": "DNb05_R",
+     "type": "DNb05",
+     "rate": 118.0
+    },
+    {
+     "instance": "DNb05_L",
+     "type": "DNb05",
+     "rate": 83.0
+    },
+    {
+     "instance": "DNg56_R",
+     "type": "DNg56",
+     "rate": 33.0
+    },
+    {
+     "instance": "DNg35_R",
+     "type": "DNg35",
+     "rate": 26.0
+    },
+    {
+     "instance": "DNg35_L",
+     "type": "DNg35",
+     "rate": 19.0
+    },
+    {
+     "instance": "DNg99_R",
+     "type": "DNg99",
+     "rate": 16.7
+    }
+   ]
+  }
+ }
+}
