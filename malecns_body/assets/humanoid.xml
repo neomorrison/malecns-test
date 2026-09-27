@@ -226,6 +226,8 @@
     <framepos name="head_pos" objtype="site" objname="head"/>
     <subtreecom name="com" body="pelvis"/>
     <subtreelinvel name="com_vel" body="pelvis"/>
+    <framepos name="hand_l_pos" objtype="site" objname="hand_l"/>
+    <framepos name="hand_r_pos" objtype="site" objname="hand_r"/>
     <actuatorfrc name="tau_lumbar_bend" actuator="lumbar_bend"/>
     <actuatorfrc name="tau_lumbar_flex" actuator="lumbar_flex"/>
     <actuatorfrc name="tau_lumbar_twist" actuator="lumbar_twist"/>

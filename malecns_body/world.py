@@ -45,6 +45,8 @@ class Log:
     vel: np.ndarray
     active: bool = False
     roll: float = 0.0
+    hit: bool = False          # touched the body
+    passed: bool = False       # rolled past the body
 
 
 @dataclass
@@ -68,6 +70,27 @@ def default_scenario(seed=0):
         hunger0=0.95,
         duration=60.0,
     )
+
+
+def random_scenario(seed: int, n_fruit: int = 5, n_prey: int = 2, n_logs: int = 3, duration: float = 60.0):
+    """Randomised hunting scenario: fruit placement, which fruit flee, log timing."""
+    rng = np.random.default_rng(seed)
+    fruits = []
+    for i in range(n_fruit):
+        d = rng.uniform(6.0, 20.0)
+        a = rng.uniform(-1.8, 1.8)
+        pos = np.array([d * np.cos(a), d * np.sin(a)])
+        if i < n_prey:
+            fruits.append(Fruit(pos, flee_speed=rng.uniform(1.8, 2.4), flee_radius=rng.uniform(5.0, 7.0),
+                                stamina=rng.uniform(4.0, 7.0)))
+        else:
+            fruits.append(Fruit(pos))
+    times = np.sort(rng.uniform(8.0, duration - 8.0, n_logs))
+    for k in range(1, n_logs):
+        times[k] = max(times[k], times[k - 1] + 8.0)
+    logs = [(float(t), float(rng.uniform(6.5, 8.0)), 0.0, float(rng.uniform(2.5, 3.5)))
+            for t in times if t < duration - 3]
+    return Scenario(fruits=fruits, log_schedule=logs, hunger0=0.95, duration=duration)
 
 
 class World:
@@ -96,6 +119,10 @@ class World:
         self.data = mujoco.MjData(self.model)
         self.fruit_mocap = [self.model.body(f"fruit{i}").mocapid[0] for i in range(len(self.fruits))]
         self.log_mocap = [self.model.body(f"log{j}").mocapid[0] for j in range(len(self.logs))]
+        self.log_geoms = {self.model.body(f"log{j}").geomadr[0]: j for j in range(len(self.logs))}
+        self.body_geoms = set(g for g in range(self.model.ngeom)
+                              if self.model.geom_bodyid[g] > 0
+                              and self.model.body_mocapid[self.model.geom_bodyid[g]] < 0)
         self.head_site = self.model.site("head").id
         self.hand_sites = [self.model.site("hand_l").id, self.model.site("hand_r").id]
         self.t = 0.0
@@ -169,9 +196,22 @@ class World:
             mujoco.mju_mulQuat(q, q_yaw, q_roll)
             self.data.mocap_pos[self.log_mocap[j]] = lg.pos
             self.data.mocap_quat[self.log_mocap[j]] = q
+            if not lg.passed and np.dot(p[:2] - lg.pos[:2], v) < -0.5 * sp:
+                lg.passed = True
+                self.events.append((self.t, f"log {j} {'hit the body' if lg.hit else 'cleared'}"))
             if np.linalg.norm(lg.pos[:2] - p[:2]) > 25:
                 lg.active = False
                 self.data.mocap_pos[self.log_mocap[j]] = [0, 0, -5]
+
+    def check_log_contacts(self):
+        """Mark logs that touch the body (call after physics steps)."""
+        d = self.data
+        for i in range(d.ncon):
+            g1, g2 = d.contact[i].geom1, d.contact[i].geom2
+            for a, b in ((g1, g2), (g2, g1)):
+                j = self.log_geoms.get(a)
+                if j is not None and b in self.body_geoms and not self.logs[j].hit:
+                    self.logs[j].hit = True
 
     # ----------------------------------------------------------------- senses
     def sense(self, fov=np.deg2rad(160), max_dist=30.0):

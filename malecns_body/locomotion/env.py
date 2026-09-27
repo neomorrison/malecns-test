@@ -141,14 +141,18 @@ class EnvConfig:
 # environment
 # ----------------------------------------------------------------------------
 
-class LocomotionEnv:
-    PROPRIO_DIM = 3 + 3 + B.N_ALL + B.N_ALL + B.N_LEG
-    TASK_DIM = 9
-    PRIV_DIM = 18
+class HumanoidSim:
+    """Batched, domain-randomised humanoid bodies stepped with mujoco.rollout.
 
-    def __init__(self, num_envs: int, cfg: EnvConfig | None = None, seed: int = 0, nthread: int = 4):
-        self.cfg = cfg or EnvConfig()
+    Shared by the locomotion and get-up environments: one physics model per
+    environment (so each can have its own randomised mass, friction, servo gains
+    ...), threaded C stepping, and sensor bookkeeping.
+    """
+
+    def __init__(self, num_envs: int, dr: DRConfig, randomize: bool, seed: int = 0, nthread: int = 4):
         self.N = num_envs
+        self.dr_cfg = dr
+        self.randomize_on = randomize
         self.rng = np.random.default_rng(seed)
         self.base = mujoco.MjModel.from_xml_path(B.HUMANOID_XML)
         m = self.base
@@ -191,33 +195,13 @@ class LocomotionEnv:
             frange=m.actuator_forcerange.copy(), damping=m.dof_damping.copy(),
             armature=m.dof_armature.copy())
 
-        N = num_envs
-        self.state = np.zeros((N, self.nstate))
-        self.ctrl_prev = np.tile(B.DEFAULT_POSE, (N, 1))
-        self.last_action = np.zeros((N, B.N_LEG))
-        self.hist = np.zeros((N, self.cfg.history, self.PROPRIO_DIM))
-        self.t = np.zeros(N)
-        self.steps = np.zeros(N, dtype=np.int64)
-        self.max_steps = int(self.cfg.episode_s / B.CONTROL_DT)
-        self.phase = np.zeros(N)
-        self.cmd = np.zeros((N, 2))
-        self.cmd_timer = np.zeros(N)
-        self.jump_t = np.full(N, -1.0)
-        self.jump_timer = np.zeros(N)
-        self.jump_peak = np.zeros(N)
-        self.push_timer = np.zeros(N)
-        self.delay = np.zeros(N, dtype=np.int64)
-        self.arm_override = np.zeros(N, dtype=bool)
-        self.arm_target = np.tile(B.DEFAULT_ARMS, (N, 1))
-        self.arm_blend = np.zeros(N)
-        self.dr_params = np.zeros((N, 5))  # friction, mass scale, kp scale, strength, delay
-        self.wz_filt = np.zeros(N)           # heading rate, low-passed over ~0.3 s
-        self.reset(np.arange(N))
+        self.delay = np.zeros(num_envs, dtype=np.int64)
+        self.dr_params = np.zeros((num_envs, 5))  # friction, mass scale, kp scale, strength, delay
 
     # ------------------------------------------------------------------ DR
     def _randomize(self, i):
-        mdl, nom, dr, r = self.models[i], self._nom, self.cfg.dr, self.rng
-        if not self.cfg.randomize:
+        mdl, nom, dr, r = self.models[i], self._nom, self.dr_cfg, self.rng
+        if not self.randomize_on:
             self.dr_params[i] = [mdl.geom_friction[self.floor, 0], 1.0, 1.0, 1.0, 0]
             return
         fr = r.uniform(*dr.friction)
@@ -240,6 +224,46 @@ class LocomotionEnv:
         self.delay[i] = r.integers(0, dr.max_delay_substeps + 1)
         total = (mdl.body_mass[1:]).sum() / nom["mass"][1:].sum()
         self.dr_params[i] = [fr, total, kp.mean(), st.mean(), self.delay[i] / max(1, dr.max_delay_substeps)]
+
+    def _forward_sensors(self, ids):
+        d = self.datas[0]
+        sd = np.zeros((len(ids), self.base.nsensordata))
+        for k, i in enumerate(ids):
+            mujoco.mj_setState(self.models[i], d, self.state[i], self.spec)
+            mujoco.mj_forward(self.models[i], d)
+            sd[k] = d.sensordata
+        return sd
+
+
+class LocomotionEnv(HumanoidSim):
+    PROPRIO_DIM = 3 + 3 + B.N_ALL + B.N_ALL + B.N_LEG
+    TASK_DIM = 9
+    PRIV_DIM = 18
+
+    def __init__(self, num_envs: int, cfg: EnvConfig | None = None, seed: int = 0, nthread: int = 4):
+        self.cfg = cfg or EnvConfig()
+        super().__init__(num_envs, self.cfg.dr, self.cfg.randomize, seed, nthread)
+        m = self.base
+        N = num_envs
+        self.state = np.zeros((N, self.nstate))
+        self.ctrl_prev = np.tile(B.DEFAULT_POSE, (N, 1))
+        self.last_action = np.zeros((N, B.N_LEG))
+        self.hist = np.zeros((N, self.cfg.history, self.PROPRIO_DIM))
+        self.t = np.zeros(N)
+        self.steps = np.zeros(N, dtype=np.int64)
+        self.max_steps = int(self.cfg.episode_s / B.CONTROL_DT)
+        self.phase = np.zeros(N)
+        self.cmd = np.zeros((N, 2))
+        self.cmd_timer = np.zeros(N)
+        self.jump_t = np.full(N, -1.0)
+        self.jump_timer = np.zeros(N)
+        self.jump_peak = np.zeros(N)
+        self.push_timer = np.zeros(N)
+        self.arm_override = np.zeros(N, dtype=bool)
+        self.arm_target = np.tile(B.DEFAULT_ARMS, (N, 1))
+        self.arm_blend = np.zeros(N)
+        self.wz_filt = np.zeros(N)           # heading rate, low-passed over ~0.3 s
+        self.reset(np.arange(N))
 
     # --------------------------------------------------------------- reset
     def _sample_commands(self, idx):
@@ -393,15 +417,6 @@ class LocomotionEnv:
         cache = dict(q=q, qd=qd, R=R, grav=grav, yaw=yaw, com_v=com_v, wz=wz, F=F,
                      fl=fl, fr=fr, fvl=fvl, fvr=fvr, g=g, qpos=qpos, qvel=qvel)
         return obs.astype(np.float32), cobs.astype(np.float32), cache
-
-    def _forward_sensors(self, ids):
-        d = self.datas[0]
-        sd = np.zeros((len(ids), self.base.nsensordata))
-        for k, i in enumerate(ids):
-            mujoco.mj_setState(self.models[i], d, self.state[i], self.spec)
-            mujoco.mj_forward(self.models[i], d)
-            sd[k] = d.sensordata
-        return sd
 
     def observe_all(self):
         ids = np.arange(self.N)
